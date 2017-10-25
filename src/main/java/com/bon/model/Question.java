@@ -4,23 +4,26 @@ import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Question {
 
     @Id
+    @NotNull(groups = {Update.class})
+    @Null(groups = {Create.class})
     private String id;
 
-    @NotNull(message = "Questioning must not be null")
+    @NotNull(groups = {Update.class, Create.class}, message = "Questioning must not be null")
     private String questioning;
 
-    @NotNull(message = "Answers must not be null")
+    @NotNull(groups = {Update.class, Create.class}, message = "Answers must not be null")
     private List<String> answers;
 
     private int correctAnswerIndex;
 
-    @AssertTrue(message = "correctAnswerIndex is not in the range of answers")
+    @AssertTrue(groups = {Update.class, Create.class}, message = "correctAnswerIndex is not in the range of answers")
     private boolean isCorrectAnswerIndexValid() {
         int correctAnswerIndex = getCorrectAnswerIndex();
         int answersSize = getAnswers().size();
@@ -96,5 +99,11 @@ public class Question {
         result = 31 * result + (answers != null ? answers.hashCode() : 0);
         result = 31 * result + correctAnswerIndex;
         return result;
+    }
+
+    public interface Update {
+    }
+
+    public interface Create {
     }
 }

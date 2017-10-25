@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -72,6 +73,14 @@ public class QuestionControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    private MvcResult doPost(Question q, ResultMatcher expected) throws Exception {
+        return mockMvc.perform(post("/question")
+                .contentType(contentType)
+                .content(json(q)))
+                .andExpect(expected)
+                .andReturn();
+    }
+
     @Before
     public void setup() throws Exception {
         mockMvc = webAppContextSetup(webApplicationContext).build();
@@ -86,6 +95,11 @@ public class QuestionControllerTest {
         MvcResult result = mockMvc.perform(post("/question")
                 .contentType(contentType)
                 .content(json(q)))
+                .andExpect(status().isCreated())
+                .andReturn();
+        // check returned result
+        String questionUrl = result.getResponse().getHeader("Location").toString();
+        result = mockMvc.perform(get(questionUrl))
                 .andExpect(status().isOk())
                 .andReturn();
         // check returned result
@@ -93,10 +107,17 @@ public class QuestionControllerTest {
         Question qReturned = new ObjectMapper().readValue(stringResult, Question.class);
         Assert.assertNotNull(qReturned.getId());
         Assert.assertEquals(q, qReturned);
-        // check if returned result exists in database
-        Question qSaved = questionRepo.findOne(qReturned.getId());
-        Assert.assertEquals(qReturned, qSaved);
-        questionRepo.delete(qReturned.getId());
+    }
+
+    @Test
+    public void createInvalidQuestion_QuestionWithId() throws Exception {
+        runBadRequestPost(q1);
+    }
+
+    @Test
+    public void createInvalidQuestion_DuplicatedQuestioning() throws Exception {
+        Question q = new Question("q1", Arrays.asList("Answer1", "Answer2", "Answer3"), 0);
+        doPost(q, status().isConflict());
     }
 
     @Test
@@ -145,7 +166,7 @@ public class QuestionControllerTest {
     public void findAllWithEmptyDB() throws Exception {
         questionRepo.deleteAll();
         mockMvc.perform(get("/question"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -164,7 +185,20 @@ public class QuestionControllerTest {
     public void findByNonExistentId() throws Exception {
         questionRepo.deleteAll();
         mockMvc.perform(get("/question/" + q1.getId()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteByExistentId() throws Exception {
+        mockMvc.perform(delete("/question/" + q1.getId()))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void deleteByNonExistentId() throws Exception {
+        questionRepo.deleteAll();
+        mockMvc.perform(delete("/question/" + q1.getId()))
+                .andExpect(status().isNotFound());
     }
 
     protected String json(Object o) throws IOException {
