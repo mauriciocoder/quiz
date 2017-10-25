@@ -1,16 +1,23 @@
 package com.bon.model;
 
 import org.springframework.data.annotation.Id;
+
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Question {
 
     @Id
     private String id;
+
+    @NotNull(message = "Questioning must not be null")
+    private String questioning;
+
     @NotNull(message = "Answers must not be null")
     private List<String> answers;
+
     private int correctAnswerIndex;
 
     @AssertTrue(message = "correctAnswerIndex is not in the range of answers")
@@ -22,6 +29,12 @@ public class Question {
 
     public Question() {}
 
+    public Question(String questioning, List<String> answers, int correctAnswerIndex) {
+        this.questioning = questioning;
+        this.answers = answers;
+        this.correctAnswerIndex = correctAnswerIndex;
+    }
+
     public String getId() {
         return id;
     }
@@ -30,8 +43,16 @@ public class Question {
         this.id = id;
     }
 
+    public String getQuestioning() {
+        return questioning;
+    }
+
+    public void setQuestioning(String questioning) {
+        this.questioning = questioning;
+    }
+
     public List<String> getAnswers() {
-        return answers;
+        return answers != null ? answers : new ArrayList<>();
     }
 
     public void setAnswers(List<String> answers) {
@@ -50,8 +71,30 @@ public class Question {
     public String toString() {
         return "Question{" +
                 "id='" + id + '\'' +
+                ", questioning='" + questioning + '\'' +
                 ", answers=" + answers +
                 ", correctAnswerIndex=" + correctAnswerIndex +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Question question = (Question) o;
+
+        if (correctAnswerIndex != question.correctAnswerIndex) return false;
+        if (!questioning.equals(question.questioning)) return false;
+        return answers.equals(question.answers);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (questioning != null ? questioning.hashCode() : 0);
+        result = 31 * result + (answers != null ? answers.hashCode() : 0);
+        result = 31 * result + correctAnswerIndex;
+        return result;
     }
 }

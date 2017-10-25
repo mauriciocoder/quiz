@@ -14,7 +14,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handle(HttpMessageNotReadableException e) {
+    public void handle(Exception e) throws Exception {
         LOGGER.warn("Returning HTTP 400 Bad Request", e);
         throw e;
     }

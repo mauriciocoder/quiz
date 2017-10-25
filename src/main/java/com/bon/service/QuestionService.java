@@ -29,4 +29,9 @@ public class QuestionService {
         log.info("finding all questions");
         return questionRepo.findAll();
     }
+
+    public Question find(String id) {
+        log.info("finding question with id: " + id);
+        return questionRepo.findOne(id);
+    }
 }
