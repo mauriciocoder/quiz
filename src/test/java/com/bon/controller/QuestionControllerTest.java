@@ -189,6 +189,39 @@ public class QuestionControllerTest {
     }
 
     @Test
+    public void updateExistentQuestion() throws Exception {
+        final String newAnswer = "newAnswer";
+        Question q = new Question("q1", Arrays.asList("Answer1", "Answer2", "Answer3", newAnswer), 0);
+        q.setId(q1.getId());
+        mockMvc.perform(put("/question/" + q1.getId())
+                .contentType(contentType)
+                .content(json(q)))
+                .andExpect(status().isNoContent());
+        Question qSaved = questionRepo.findOne(q.getId());
+        Assert.assertTrue(qSaved.getAnswers().contains(newAnswer));
+    }
+
+    @Test
+    public void updateNonExistentQuestion() throws Exception {
+        final String nonExistentId = "1234";
+        Question q = new Question("q1", Arrays.asList("Answer1", "Answer2", "Answer3"), 0);
+        q.setId(nonExistentId);
+        mockMvc.perform(put("/question/" + nonExistentId)
+                .contentType(contentType)
+                .content(json(q)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateExistentQuestionWithDifferentId() throws Exception {
+        final String nonExistentId = "1234";
+        mockMvc.perform(put("/question/" + nonExistentId)
+                .contentType(contentType)
+                .content(json(q1)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void deleteByExistentId() throws Exception {
         mockMvc.perform(delete("/question/" + q1.getId()))
                 .andExpect(status().isNoContent());

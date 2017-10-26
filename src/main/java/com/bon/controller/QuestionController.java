@@ -8,6 +8,7 @@ import org.springframework.boot.context.config.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.ResourceAccessException;
@@ -52,6 +53,20 @@ public class QuestionController {
         try {
             Question question = questionService.find(id);
             return ResponseEntity.ok(question);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @RequestMapping(value = "/{id}", method=RequestMethod.PUT)
+    @ApiOperation(value = "Updates the question with the provided id", notes = "Updates the question with the provided id from mongodb database. It does not create if non exist")
+    public ResponseEntity update(@PathVariable(value = "id", required = true) String id, @RequestBody Question question) {
+        if (!id.equalsIgnoreCase(question.getId())) {
+            return ResponseEntity.badRequest().body("Cannot update question with an id different from path variable id");
+        }
+        try {
+            questionService.update(question);
+            return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }

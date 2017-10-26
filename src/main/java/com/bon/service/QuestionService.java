@@ -20,19 +20,24 @@ public class QuestionService {
     @Autowired
     private QuestionRepository questionRepo;
 
-    public Question create(Question q) {
-        log.info("creating question: " + q);
-        Question duplicated = questionRepo.findByQuestioning(q.getQuestioning());
+    public Question create(Question question) {
+        log.info("creating question: " + question);
+        Question duplicated = questionRepo.findByQuestioning(question.getQuestioning());
         if (duplicated != null) {
-            log.info("question: " + q + " already exists!");
+            log.info("question: " + question + " already exists!");
             throw new ResourceAccessException("Question already exists");
         }
-        return questionRepo.save(q);
+        return questionRepo.save(question);
     }
 
-    public Question update(Question q) {
-        log.info("updating question: " + q);
-        return questionRepo.save(q);
+    public Question update(Question question) {
+        String id = question.getId();
+        log.info("updating question with id: " + id);
+        if (!questionRepo.exists(id)) {
+            log.info("question with id: " + id + " does not exists!");
+            throw new ResourceNotFoundException(null, null);
+        }
+        return questionRepo.save(question);
     }
 
     public List<Question> findAll() {
@@ -40,7 +45,7 @@ public class QuestionService {
         List<Question> all = questionRepo.findAll();
         if (CollectionUtils.isEmpty(all)) {
             log.info("database is empty");
-            throw new ResourceNotFoundException("all", null);  // FIXME: Fix null parameter
+            throw new ResourceNotFoundException(null, null);
         }
         return all;
     }
@@ -49,7 +54,7 @@ public class QuestionService {
         log.info("finding question with id: " + id);
         if (!questionRepo.exists(id)) {
             log.info("question with id: " + id + " does not exists!");
-            throw new ResourceNotFoundException(id, null);  // FIXME: Fix null parameter
+            throw new ResourceNotFoundException(null, null);
         }
         return questionRepo.findOne(id);
     }
@@ -58,7 +63,7 @@ public class QuestionService {
         log.info("deleting question with id: " + id);
         if (!questionRepo.exists(id)) {
             log.info("question with id: " + id + " does not exists!");
-            throw new ResourceNotFoundException(id, null);
+            throw new ResourceNotFoundException(null, null);
         }
         questionRepo.delete(id);
     }
