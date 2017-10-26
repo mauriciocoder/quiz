@@ -8,7 +8,6 @@ import org.springframework.boot.context.config.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.ResourceAccessException;
@@ -23,7 +22,7 @@ public class QuestionController {
     @Autowired
     private QuestionService questionService;
 
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     @ApiOperation(value = "Creates a new question", notes = "Creates a new question in mongodb database.")
     @ResponseBody
     public ResponseEntity<Void> create(@Validated(Question.Create.class) @RequestBody Question question) throws URISyntaxException {
@@ -35,7 +34,7 @@ public class QuestionController {
         }
     }
 
-    @RequestMapping(method=RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "Retrieves every question", notes = "Retrieves every question from mongodb database.")
     @ResponseBody
     public ResponseEntity<List<Question>> findAll() {
@@ -47,7 +46,7 @@ public class QuestionController {
         }
     }
 
-    @RequestMapping(value = "/{id}", method=RequestMethod.GET)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ApiOperation(value = "Retrieves the question with the provided id", notes = "Retrieves the question with the provided id from mongodb database.")
     public ResponseEntity<Question> find(@PathVariable(value = "id", required = true) String id) {
         try {
@@ -58,7 +57,7 @@ public class QuestionController {
         }
     }
 
-    @RequestMapping(value = "/{id}", method=RequestMethod.PUT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     @ApiOperation(value = "Updates the question with the provided id", notes = "Updates the question with the provided id from mongodb database. It does not create if non exist")
     public ResponseEntity update(@PathVariable(value = "id", required = true) String id, @RequestBody Question question) {
         if (!id.equalsIgnoreCase(question.getId())) {
@@ -72,7 +71,7 @@ public class QuestionController {
         }
     }
 
-    @RequestMapping(value = "/{id}", method=RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Deletes a question by id", notes = "Deletes a question by id in mongodb database.")
     @ResponseBody
     public ResponseEntity<Void> delete(@PathVariable(value = "id", required = true) String id) {

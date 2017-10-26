@@ -35,10 +35,18 @@ public class ControllerBaseTest {
 
     public ControllerBaseTest() {
         try {
-            this.requestPath = Class.forName(this.getClass().getName().replace("Test", "")).getAnnotation(RequestMapping.class).value()[0].toString();
+            String controllerClassName = this.getClass().getName().replace("Test", "");
+            this.requestPath = Class.forName(controllerClassName).getAnnotation(RequestMapping.class).value()[0].toString();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String json(Object o) throws IOException {
+        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
+        this.mappingJackson2HttpMessageConverter.write(
+                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+        return mockHttpOutputMessage.getBodyAsString();
     }
 
     @Before
@@ -84,13 +92,6 @@ public class ControllerBaseTest {
         return mockMvc.perform(delete(requestPath + "/" + resourceId))
                 .andExpect(expected)
                 .andReturn();
-    }
-
-    protected String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(
-                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
     }
 
     @Autowired

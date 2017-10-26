@@ -23,19 +23,20 @@ public class Question {
 
     private int correctAnswerIndex;
 
-    @AssertTrue(groups = {Update.class, Create.class}, message = "correctAnswerIndex is not in the range of answers")
-    private boolean isCorrectAnswerIndexValid() {
-        int correctAnswerIndex = getCorrectAnswerIndex();
-        int answersSize = getAnswers().size();
-        return correctAnswerIndex >= 0 && correctAnswerIndex < answersSize;
+    public Question() {
     }
-
-    public Question() {}
 
     public Question(String questioning, List<String> answers, int correctAnswerIndex) {
         this.questioning = questioning;
         this.answers = answers;
         this.correctAnswerIndex = correctAnswerIndex;
+    }
+
+    @AssertTrue(groups = {Update.class, Create.class}, message = "correctAnswerIndex is not in the range of answers")
+    private boolean isCorrectAnswerIndexValid() {
+        int correctAnswerIndex = getCorrectAnswerIndex();
+        int answersSize = getAnswers().size();
+        return correctAnswerIndex >= 0 && correctAnswerIndex < answersSize;
     }
 
     public String getId() {
