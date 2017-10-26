@@ -8,9 +8,11 @@ This example demonstrates how to setup a simple HTTP CRUD endpoint using SpringB
 - [Exec Maven Plugin](http://www.mojohaus.org/exec-maven-plugin/) is used to provide goals for Java application run.
 - [Jackson](https://github.com/FasterXML/jackson) is used to serialize objects to JSON.
 
+
 ## Use Cases
 
 - CRUD operations on Question entity
+
 
 ## Build
 
@@ -36,6 +38,7 @@ spring.data.mongodb.host=localhost
 spring.data.mongodb.port=27017
 spring.data.mongodb.database=quiz
 ```
+
 
 ### MongoDB
 
@@ -84,9 +87,10 @@ In order to build using Maven simply run
 mvn package
 ```
 
+
 ## Deploy
 
-After having built the deployment artifact using Maven and having a mongodb instance configured as described above you can deploy by simply running
+After having built the deployment artifact using Maven and having a mongodb instance configured as described above you can deploy by simply running:
 
 ```bash
 mvn exec:java
@@ -99,11 +103,12 @@ The expected result should be similar to:
 2017-10-26 14:36:26.837  INFO 10686 --- [lication.main()] com.bon.application.Application          : Started Application in 13.036 seconds (JVM running for 18.967)
 ```
 
+
 ## Usage
 
 Every CRUD operation in the application is conventioned to use the following HTTP methods pattern:
 
-![alt text](https://lh3.googleusercontent.com/-cpYCrP36Nc8/VsWO7emBMRI/AAAAAAAAAyU/0rv7Lnl0aNI/s1600-h/image%25255B5%25255D.png)
+- [HTTP Rest Pattern](https://lh3.googleusercontent.com/-cpYCrP36Nc8/VsWO7emBMRI/AAAAAAAAAyU/0rv7Lnl0aNI/s1600-h/image%25255B5%25255D.png)
 
 You can now browse Swager UI to perform HTTP requests using a graphical interface:
 
@@ -136,6 +141,7 @@ HEADERS:
 }
 ```
 
+
 ## ToDo
 
-By default, AWS Lambda limits the total concurrent executions across all functions within a given region to 100. The default limit is a safety limit that protects you from costs due to potential runaway or recursive functions during initial development and testing. To increase this limit above the default, follow the steps in [To request a limit increase for concurrent executions](http://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html#increase-concurrent-executions-limit).
+It is still in progress the development of a security interface to protect the REST endpoints, also it needs further configurations in order to be containerized in a Docker image.
