@@ -1,5 +1,6 @@
 package com.bon.controller;
 
+import com.bon.ControllerBaseTest;
 import com.bon.application.Application;
 import com.bon.model.Question;
 import com.bon.repository.QuestionRepository;
@@ -38,52 +39,15 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class QuestionControllerTest {
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
+public class QuestionControllerTest extends ControllerBaseTest {
 
     @Autowired
     private QuestionRepository questionRepo;
 
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream()
-                .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
-                .findAny()
-                .orElse(null);
-        assertNotNull("the JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
-    }
-
-    private MockMvc mockMvc;
-
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-
-    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
-
     private Question q1, q2;
-
-    private void runBadRequestPost(Question q) throws Exception {
-        mockMvc.perform(post("/question")
-                .contentType(contentType)
-                .content(json(q)))
-                .andExpect(status().isBadRequest());
-    }
-
-    private MvcResult doPost(Question q, ResultMatcher expected) throws Exception {
-        return mockMvc.perform(post("/question")
-                .contentType(contentType)
-                .content(json(q)))
-                .andExpect(expected)
-                .andReturn();
-    }
 
     @Before
     public void setup() throws Exception {
-        mockMvc = webAppContextSetup(webApplicationContext).build();
         questionRepo.deleteAll();
         q1 = questionRepo.save(new Question("q1", Arrays.asList("Answer1", "Answer2", "Answer3"), 0));
         q2 = questionRepo.save(new Question("q2", Arrays.asList("Answer1", "Answer2", "Answer3"), 0));
@@ -92,16 +56,10 @@ public class QuestionControllerTest {
     @Test
     public void createValidQuestion() throws Exception {
         Question q = new Question("q", Arrays.asList("Answer1", "Answer2", "Answer3"), 0);
-        MvcResult result = mockMvc.perform(post("/question")
-                .contentType(contentType)
-                .content(json(q)))
-                .andExpect(status().isCreated())
-                .andReturn();
+        MvcResult result = doPost(q, status().isCreated());
         // check returned result
-        String questionUrl = result.getResponse().getHeader("Location").toString();
-        result = mockMvc.perform(get(questionUrl))
-                .andExpect(status().isOk())
-                .andReturn();
+        String location = result.getResponse().getHeader("Location").toString();
+        result = doGetByLocation(location, status().isOk());
         // check returned result
         String stringResult = result.getResponse().getContentAsString();
         Question qReturned = new ObjectMapper().readValue(stringResult, Question.class);
@@ -111,7 +69,7 @@ public class QuestionControllerTest {
 
     @Test
     public void createInvalidQuestion_QuestionWithId() throws Exception {
-        runBadRequestPost(q1);
+        doPost(q1, status().isBadRequest());
     }
 
     @Test
@@ -123,38 +81,36 @@ public class QuestionControllerTest {
     @Test
     public void createInvalidQuestion_NullQuestioning() throws Exception {
         Question q = new Question(null, Arrays.asList("Answer1", "Answer2", "Answer3"), 0);
-        runBadRequestPost(q);
+        doPost(q, status().isBadRequest());
     }
 
     @Test
     public void createInvalidQuestion_EmptyAnswers() throws Exception {
         Question q = new Question("q", new ArrayList<>(), 0);
-        runBadRequestPost(q);
+        doPost(q, status().isBadRequest());
     }
 
     @Test
     public void createInvalidQuestion_NullAnswers() throws Exception {
         Question q = new Question("q", null, 0);
-        runBadRequestPost(q);
+        doPost(q, status().isBadRequest());
     }
 
     @Test
     public void createInvalidQuestion_OutOfRangeCorrectAnswerIndex_below() throws Exception {
         Question q = new Question(null, Arrays.asList("Answer1", "Answer2", "Answer3"), -1);
-        runBadRequestPost(q);
+        doPost(q, status().isBadRequest());
     }
 
     @Test
     public void createInvalidQuestion_OutOfRangeCorrectAnswerIndex_after() throws Exception {
         Question q = new Question(null, Arrays.asList("Answer1", "Answer2", "Answer3"), 3);
-        runBadRequestPost(q);
+        doPost(q, status().isBadRequest());
     }
 
     @Test
     public void findAll() throws Exception {
-        MvcResult result = mockMvc.perform(get("/question"))
-                .andExpect(status().isOk())
-                .andReturn();
+        MvcResult result = doGet(status().isOk());
         // check returned result
         String stringResult = result.getResponse().getContentAsString();
         List all = new ObjectMapper().readValue(stringResult, new TypeReference<List<Question>>(){});
@@ -165,15 +121,12 @@ public class QuestionControllerTest {
     @Test
     public void findAllWithEmptyDB() throws Exception {
         questionRepo.deleteAll();
-        mockMvc.perform(get("/question"))
-                .andExpect(status().isNotFound());
+        doGet(status().isNotFound());
     }
 
     @Test
     public void findByExistentId() throws Exception {
-        MvcResult result = mockMvc.perform(get("/question/" + q1.getId()))
-                .andExpect(status().isOk())
-                .andReturn();
+        MvcResult result = doGet(q1.getId(), status().isOk());
         // check returned result
         String stringResult = result.getResponse().getContentAsString();
         Question qReturned = new ObjectMapper().readValue(stringResult, Question.class);
@@ -184,8 +137,7 @@ public class QuestionControllerTest {
     @Test
     public void findByNonExistentId() throws Exception {
         questionRepo.deleteAll();
-        mockMvc.perform(get("/question/" + q1.getId()))
-                .andExpect(status().isNotFound());
+        doGet(q1.getId(), status().isNotFound());
     }
 
     @Test
@@ -193,10 +145,7 @@ public class QuestionControllerTest {
         final String newAnswer = "newAnswer";
         Question q = new Question("q1", Arrays.asList("Answer1", "Answer2", "Answer3", newAnswer), 0);
         q.setId(q1.getId());
-        mockMvc.perform(put("/question/" + q1.getId())
-                .contentType(contentType)
-                .content(json(q)))
-                .andExpect(status().isNoContent());
+        doPut(q1.getId(), q, status().isNoContent());
         Question qSaved = questionRepo.findOne(q.getId());
         Assert.assertTrue(qSaved.getAnswers().contains(newAnswer));
     }
@@ -206,38 +155,23 @@ public class QuestionControllerTest {
         final String nonExistentId = "1234";
         Question q = new Question("q1", Arrays.asList("Answer1", "Answer2", "Answer3"), 0);
         q.setId(nonExistentId);
-        mockMvc.perform(put("/question/" + nonExistentId)
-                .contentType(contentType)
-                .content(json(q)))
-                .andExpect(status().isNotFound());
+        doPut(nonExistentId, q, status().isNotFound());
     }
 
     @Test
     public void updateExistentQuestionWithDifferentId() throws Exception {
         final String nonExistentId = "1234";
-        mockMvc.perform(put("/question/" + nonExistentId)
-                .contentType(contentType)
-                .content(json(q1)))
-                .andExpect(status().isBadRequest());
+        doPut(nonExistentId, q1, status().isBadRequest());
     }
 
     @Test
     public void deleteByExistentId() throws Exception {
-        mockMvc.perform(delete("/question/" + q1.getId()))
-                .andExpect(status().isNoContent());
+        doDelete(q1.getId(), status().isNoContent());
     }
 
     @Test
     public void deleteByNonExistentId() throws Exception {
         questionRepo.deleteAll();
-        mockMvc.perform(delete("/question/" + q1.getId()))
-                .andExpect(status().isNotFound());
-    }
-
-    protected String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(
-                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
+        doDelete(q1.getId(), status().isNotFound());
     }
 }
