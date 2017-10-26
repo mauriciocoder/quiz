@@ -72,7 +72,7 @@ $ mongod
 
 You probably won’t see much more than this:
 
-``bash
+```bash
 all output going to: /usr/local/var/log/mongodb/mongo.log
 ```
 
@@ -86,7 +86,7 @@ mvn package
 
 ## Deploy
 
-After having built the deployment artifact using Maven as described above you can deploy by simply running
+After having built the deployment artifact using Maven and having a mongodb instance configured as described above you can deploy by simply running
 
 ```bash
 mvn exec:java
@@ -101,6 +101,10 @@ The expected result should be similar to:
 
 ## Usage
 
+Every CRUD operation in the application is conventioned to use the following HTTP methods pattern:
+
+![alt text](https://lh3.googleusercontent.com/-cpYCrP36Nc8/VsWO7emBMRI/AAAAAAAAAyU/0rv7Lnl0aNI/s1600-h/image%25255B5%25255D.png)
+
 You can now browse Swager UI to perform HTTP requests using a graphical interface:
 
 - [SwagerUI](http://localhost:9000/swagger-ui.html#/) The application runs the Swager-UI
@@ -108,13 +112,28 @@ You can now browse Swager UI to perform HTTP requests using a graphical interfac
 Or you can perform it using your CLI, for instance:
 
 ```bash
-curl https://XXXXXXX.execute-api.us-east-1.amazonaws.com/dev/ping
+curl -X POST --header 'Content-Type: application/json' --header 'Accept: */*' -d '{ \ 
+   "answers": [ \ 
+     "Donald Trump", "George Bush", "Barack Obama" \ 
+   ], \ 
+   "correctAnswerIndex": 0, \ 
+   "questioning": "What is the name of the president of the USA?" \ 
+ }' 'http://localhost:9000/question'
 ```
 
 The expected result should be similar to:
 
 ```bash
-{"message": "Hello, the current time is Wed Jan 04 23:44:37 UTC 2017"}%  
+RESPONSE CODE
+201
+HEADERS:
+{
+  "location": "/question/59f2151115dd9429be54a8a7",
+  "date": "Thu, 26 Oct 2017 17:02:09 GMT",
+  "content-length": "0",
+  "x-application-context": "application:9000",
+  "content-type": null
+}
 ```
 
 ## ToDo
