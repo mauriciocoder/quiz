@@ -1,15 +1,11 @@
-# Simple HTTP CRUD Endpoint Example for a Quiz Application
+# Simple HTTP CRUD Endpoint Example
 
 This example demonstrates how to setup a simple HTTP CRUD endpoint using SpringBoot. You can perform any CRUD operation on Question entity. Solution's stack:
 
 [SpringBoot](https://projects.spring.io/spring-boot/) is used to provide a container boot and MVC support.
-
 [Swager](https://swagger.io/) is used for API tooling and REST documentation.
-
 [MongoDB](https://www.mongodb.com/) is used for entity persistence.
-
 [Exec Maven Plugin](http://www.mojohaus.org/exec-maven-plugin/) is used to provide goals for Java application run.
-
 [Jackson](https://github.com/FasterXML/jackson) is used to serialize objects to JSON.
 
 ## Use Cases
