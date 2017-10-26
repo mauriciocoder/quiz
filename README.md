@@ -1,47 +1,20 @@
-# Simple HTTP Endpoint Example
+# Simple HTTP CRUD Endpoint Example for a Quiz Application
 
-This example demonstrates how to setup a simple HTTP GET endpoint using Java. Once you ping it, it will reply with the current time.
+This example demonstrates how to setup a simple HTTP CRUD endpoint using SpringBoot. You can perform any CRUD operation on Question entity. Solution's stack:
 
+[SpringBoot](https://projects.spring.io/spring-boot/) is used to provide a container boot and MVC support.
+[Swager](https://swagger.io/) is used for API tooling and REST documentation.
+[MongoDB](https://www.mongodb.com/) is used for entity persistence.
+[Exec Maven Plugin](http://www.mojohaus.org/exec-maven-plugin/) is used to provide goals for Java application run.
 [Jackson](https://github.com/FasterXML/jackson) is used to serialize objects to JSON.
 
 ## Use Cases
 
-- Wrapping an existing internal or external endpoint/service
+- CRUD operations on Question entity
 
 ## Build
 
-It is required to build prior to deploying. You can build the deployment artifact using Gradle or Maven.
-
-### Gradle
-
-In order to build using Gradle simply run
-
-```bash
-gradle wrapper # to build the gradle wrapper jar
-./gradlew build # to build the application jar
-```
-
-The expected result should be similar to:
-
-```bash
-Starting a Gradle Daemon, 1 incompatible Daemon could not be reused, use --status for details
-:compileJava
-:processResources
-:classes
-:jar
-:assemble
-:buildZip
-:compileTestJava UP-TO-DATE
-:processTestResources UP-TO-DATE
-:testClasses UP-TO-DATE
-:test UP-TO-DATE
-:check UP-TO-DATE
-:build
-
-BUILD SUCCESSFUL
-
-Total time: 8.195 secs
-```
+It is required to build prior to deploying. You must build the deployment artifact using Maven.
 
 ### Maven
 
