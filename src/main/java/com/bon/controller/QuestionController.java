@@ -26,60 +26,40 @@ public class QuestionController {
     @ApiOperation(value = "Creates a new question", notes = "Creates a new question in mongodb database.")
     @ResponseBody
     public ResponseEntity<Void> create(@Validated(Question.Create.class) @RequestBody Question question) throws URISyntaxException {
-        try {
-            Question q = questionService.create(question);
-            return ResponseEntity.created(new URI("/question/" + q.getId())).build();
-        } catch (ResourceAccessException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+        Question q = questionService.create(question);
+        return ResponseEntity.created(new URI("/question/" + q.getId())).build();
     }
 
     @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "Retrieves every question", notes = "Retrieves every question from mongodb database.")
     @ResponseBody
     public ResponseEntity<List<Question>> findAll() {
-        try {
-            List<Question> questions = questionService.findAll();
-            return ResponseEntity.ok(questions);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        List<Question> questions = questionService.findAll();
+        return ResponseEntity.ok(questions);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ApiOperation(value = "Retrieves the question with the provided id", notes = "Retrieves the question with the provided id from mongodb database.")
     public ResponseEntity<Question> find(@PathVariable(value = "id", required = true) String id) {
-        try {
-            Question question = questionService.find(id);
-            return ResponseEntity.ok(question);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        Question question = questionService.find(id);
+        return ResponseEntity.ok(question);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     @ApiOperation(value = "Updates the question with the provided id", notes = "Updates the question with the provided id from mongodb database. It does not create if non exist")
-    public ResponseEntity update(@PathVariable(value = "id", required = true) String id, @RequestBody Question question) {
+    public ResponseEntity update(@PathVariable(value = "id", required = true) String id, @Validated(Question.Update.class) @RequestBody Question question) {
         if (!id.equalsIgnoreCase(question.getId())) {
             return ResponseEntity.badRequest().body("Cannot update question with an id different from path variable id");
         }
-        try {
-            questionService.update(question);
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        questionService.update(question);
+        return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ApiOperation(value = "Deletes a question by id", notes = "Deletes a question by id in mongodb database.")
     @ResponseBody
     public ResponseEntity<Void> delete(@PathVariable(value = "id", required = true) String id) {
-        try {
-            questionService.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        questionService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
