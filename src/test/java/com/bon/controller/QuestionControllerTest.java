@@ -1,7 +1,7 @@
 package com.bon.controller;
 
 import com.bon.ControllerBaseTest;
-import com.bon.application.Application;
+import com.bon.Application;
 import com.bon.model.Question;
 import com.bon.repository.QuestionRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// TODO: Fazer o teste rodar com um banco em memória!! Buscar a dependência certa!
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -42,21 +43,22 @@ public class QuestionControllerTest extends ControllerBaseTest {
     }
 
     @Test
-    public void createValidQuestion() throws Exception {
-        Question q = new Question("q", Arrays.asList("Answer1", "Answer2", "Answer3"), 0);
-        MvcResult result = doPost(q, status().isCreated());
+    public void should_create_valid_question() throws Exception {
+        final Question q = new Question("q", Arrays.asList("Answer1", "Answer2", "Answer3"), 0);
+        final MvcResult postResult = doPost(q, status().isCreated());
         // check returned result
-        String location = result.getResponse().getHeader("Location").toString();
-        result = doGetByLocation(location, status().isOk());
+        String location = postResult.getResponse().getHeader("Location").toString();
+        final MvcResult getResult = doGetByLocation(location, status().isOk());
         // check returned result
-        String stringResult = result.getResponse().getContentAsString();
+        String stringResult = getResult.getResponse().getContentAsString();
         Question qReturned = new ObjectMapper().readValue(stringResult, Question.class);
         Assert.assertNotNull(qReturned.getId());
         Assert.assertEquals(q, qReturned);
     }
 
+    // TODO: Replicar o padrão de nomeação para os demais métodos
     @Test
-    public void createInvalidQuestion_QuestionWithId() throws Exception {
+    public void should_fail_with_400_when_question_is_duplicate() throws Exception {
         doPost(q1, status().isBadRequest());
     }
 

@@ -58,7 +58,7 @@
             <artifactId>exec-maven-plugin</artifactId>
             <version>1.2.1</version>
             <configuration>
-                <mainClass>com.bon.application.Application</mainClass>
+                <mainClass>com.bon.Application</mainClass>
             </configuration>
         </plugin>
     </plugins>

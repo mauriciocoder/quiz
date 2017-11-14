@@ -14,26 +14,26 @@ import javax.servlet.http.HttpServletResponse;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(ControllerExceptionHandler.class);
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handle(MethodArgumentNotValidException e, HttpServletResponse response) throws Exception {
-        LOGGER.warn("Returning HTTP 400 Bad Request", e);
+        log.warn("Returning HTTP 400 Bad Request", e);
         response.sendError(HttpStatus.BAD_REQUEST.value());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public void handle(ResourceNotFoundException e, HttpServletResponse response) throws Exception {
-        LOGGER.warn("Returning HTTP 404 Not Found", e);
+        log.warn("Returning HTTP 404 Not Found", e);
         response.sendError(HttpStatus.NOT_FOUND.value());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public void handle(ResourceAccessException e, HttpServletResponse response) throws Exception {
-        LOGGER.warn("Returning HTTP 409 Conflict", e);
+        log.warn("Returning HTTP 409 Conflict", e);
         response.sendError(HttpStatus.CONFLICT.value());
     }
 }

@@ -14,33 +14,42 @@ import java.util.List;
 
 @Component
 public class QuestionService {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(QuestionService.class);
+
+    private QuestionRepository repository;
+
     @Autowired
-    private QuestionRepository questionRepo;
+    public QuestionService(QuestionRepository repository) {
+        if (repository == null) {
+            throw new IllegalArgumentException();
+        }
+        this.repository = repository;
+    }
 
     public Question create(Question question) {
         log.info("creating question: " + question);
-        Question duplicated = questionRepo.findByQuestioning(question.getQuestioning());
+        // TODO: A regra ta resolvendo alguma coisa?!!?
+        Question duplicated = repository.findByQuestioning(question.getQuestioning());
         if (duplicated != null) {
             log.info("question: " + question + " already exists!");
             throw new ResourceAccessException("Question already exists");
         }
-        return questionRepo.save(question);
+        return repository.save(question);
     }
 
     public Question update(Question question) {
         String id = question.getId();
         log.info("updating question with id: " + id);
-        if (!questionRepo.exists(id)) {
+        if (!repository.exists(id)) {
             log.info("question with id: " + id + " does not exists!");
             throw new ResourceNotFoundException(null, null);
         }
-        return questionRepo.save(question);
+        return repository.save(question);
     }
 
     public List<Question> findAll() {
         log.info("finding all questions");
-        List<Question> all = questionRepo.findAll();
+        List<Question> all = repository.findAll();
         if (CollectionUtils.isEmpty(all)) {
             log.info("database is empty");
             throw new ResourceNotFoundException(null, null);
@@ -50,19 +59,19 @@ public class QuestionService {
 
     public Question find(String id) {
         log.info("finding question with id: " + id);
-        if (!questionRepo.exists(id)) {
+        if (!repository.exists(id)) {
             log.info("question with id: " + id + " does not exists!");
             throw new ResourceNotFoundException(null, null);
         }
-        return questionRepo.findOne(id);
+        return repository.findOne(id);
     }
 
     public void delete(String id) throws ResourceNotFoundException {
         log.info("deleting question with id: " + id);
-        if (!questionRepo.exists(id)) {
+        if (!repository.exists(id)) {
             log.info("question with id: " + id + " does not exists!");
             throw new ResourceNotFoundException(null, null);
         }
-        questionRepo.delete(id);
+        repository.delete(id);
     }
 }

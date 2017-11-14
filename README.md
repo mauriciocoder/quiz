@@ -100,7 +100,7 @@ The expected result should be similar to:
 
 ```bash
 2017-10-26 14:36:26.828  INFO 10686 --- [lication.main()] ication$$EnhancerBySpringCGLIB$$eea4fab7 : welcomePageHandlerMapping
-2017-10-26 14:36:26.837  INFO 10686 --- [lication.main()] com.bon.application.Application          : Started Application in 13.036 seconds (JVM running for 18.967)
+2017-10-26 14:36:26.837  INFO 10686 --- [lication.main()] com.bon.Application          : Started Application in 13.036 seconds (JVM running for 18.967)
 ```
 
 

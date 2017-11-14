@@ -1,5 +1,6 @@
 package com.bon.model;
 
+import com.bon.config.Action;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.AssertTrue;
@@ -11,20 +12,19 @@ import java.util.List;
 public class Question {
 
     @Id
-    @NotNull(groups = {Update.class})
-    @Null(groups = {Create.class})
+    @NotNull(groups = {Action.Update.class})
+    @Null(groups = {Action.Create.class})
     private String id;
 
-    @NotNull(groups = {Update.class, Create.class}, message = "Questioning must not be null")
+    @NotNull(groups = {Action.Update.class, Action.Create.class}, message = "Questioning must not be null")
     private String questioning;
 
-    @NotNull(groups = {Update.class, Create.class}, message = "Answers must not be null")
+    @NotNull(groups = {Action.Update.class, Action.Create.class}, message = "Answers must not be null")
     private List<String> answers;
 
     private int correctAnswerIndex;
 
-    public Question() {
-    }
+    public Question() {}
 
     public Question(String questioning, List<String> answers, int correctAnswerIndex) {
         this.questioning = questioning;
@@ -32,7 +32,7 @@ public class Question {
         this.correctAnswerIndex = correctAnswerIndex;
     }
 
-    @AssertTrue(groups = {Update.class, Create.class}, message = "correctAnswerIndex is not in the range of answers")
+    @AssertTrue(groups = {Action.Update.class, Action.Create.class}, message = "correctAnswerIndex is not in the range of answers")
     private boolean isCorrectAnswerIndexValid() {
         int correctAnswerIndex = getCorrectAnswerIndex();
         int answersSize = getAnswers().size();
@@ -100,11 +100,5 @@ public class Question {
         result = 31 * result + (answers != null ? answers.hashCode() : 0);
         result = 31 * result + correctAnswerIndex;
         return result;
-    }
-
-    public interface Update {
-    }
-
-    public interface Create {
     }
 }
