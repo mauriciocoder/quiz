@@ -1,12 +1,14 @@
 package com.bon.model;
 
 import com.bon.config.Action;
+import lombok.Builder;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Question {
@@ -26,7 +28,9 @@ public class Question {
 
     public Question() {}
 
-    public Question(String questioning, List<String> answers, int correctAnswerIndex) {
+    @Builder
+    public Question(String id, String questioning, List<String> answers, int correctAnswerIndex) {
+        this.id = id;
         this.questioning = questioning;
         this.answers = answers;
         this.correctAnswerIndex = correctAnswerIndex;

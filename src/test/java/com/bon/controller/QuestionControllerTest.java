@@ -38,13 +38,28 @@ public class QuestionControllerTest extends ControllerBaseTest {
     @Before
     public void setup() throws Exception {
         questionRepo.deleteAll();
-        q1 = questionRepo.save(new Question("q1", Arrays.asList("Answer1", "Answer2", "Answer3"), 0));
-        q2 = questionRepo.save(new Question("q2", Arrays.asList("Answer1", "Answer2", "Answer3"), 0));
+        q1 = questionRepo.save(Question
+                .builder()
+                .questioning("q1")
+                .answers(Arrays.asList("Answer1", "Answer2", "Answer3"))
+                .correctAnswerIndex(0)
+                .build());
+        q2 = questionRepo.save(Question
+                .builder()
+                .questioning("q2")
+                .answers(Arrays.asList("Answer1", "Answer2", "Answer3"))
+                .correctAnswerIndex(0)
+                .build());
     }
 
     @Test
     public void should_create_valid_question() throws Exception {
-        final Question q = new Question("q", Arrays.asList("Answer1", "Answer2", "Answer3"), 0);
+        final Question q = Question
+                .builder()
+                .questioning("q")
+                .answers(Arrays.asList("Answer1", "Answer2", "Answer3"))
+                .correctAnswerIndex(0)
+                .build();
         final MvcResult postResult = doPost(q, status().isCreated());
         // check returned result
         String location = postResult.getResponse().getHeader("Location").toString();
@@ -64,37 +79,65 @@ public class QuestionControllerTest extends ControllerBaseTest {
 
     @Test
     public void createInvalidQuestion_DuplicatedQuestioning() throws Exception {
-        Question q = new Question("q1", Arrays.asList("Answer1", "Answer2", "Answer3"), 0);
+        final Question q = Question
+                .builder()
+                .questioning("q1")
+                .answers(Arrays.asList("Answer1", "Answer2", "Answer3"))
+                .correctAnswerIndex(0)
+                .build();
         doPost(q, status().isConflict());
     }
 
     @Test
     public void createInvalidQuestion_NullQuestioning() throws Exception {
-        Question q = new Question(null, Arrays.asList("Answer1", "Answer2", "Answer3"), 0);
+        final Question q = Question
+                .builder()
+                .answers(Arrays.asList("Answer1", "Answer2", "Answer3"))
+                .correctAnswerIndex(0)
+                .build();
         doPost(q, status().isBadRequest());
     }
 
     @Test
     public void createInvalidQuestion_EmptyAnswers() throws Exception {
-        Question q = new Question("q", new ArrayList<>(), 0);
+        final Question q = Question
+                .builder()
+                .questioning("q")
+                .answers(new ArrayList<>())
+                .correctAnswerIndex(0)
+                .build();
         doPost(q, status().isBadRequest());
     }
 
     @Test
     public void createInvalidQuestion_NullAnswers() throws Exception {
-        Question q = new Question("q", null, 0);
+        final Question q = Question
+                .builder()
+                .questioning("q")
+                .correctAnswerIndex(0)
+                .build();
         doPost(q, status().isBadRequest());
     }
 
     @Test
     public void createInvalidQuestion_OutOfRangeCorrectAnswerIndex_below() throws Exception {
-        Question q = new Question(null, Arrays.asList("Answer1", "Answer2", "Answer3"), -1);
+        final Question q = Question
+                .builder()
+                .questioning("q")
+                .answers(new ArrayList<>())
+                .correctAnswerIndex(-1)
+                .build();
         doPost(q, status().isBadRequest());
     }
 
     @Test
     public void createInvalidQuestion_OutOfRangeCorrectAnswerIndex_after() throws Exception {
-        Question q = new Question(null, Arrays.asList("Answer1", "Answer2", "Answer3"), 3);
+        final Question q = Question
+                .builder()
+                .questioning("q")
+                .answers(new ArrayList<>())
+                .correctAnswerIndex(3)
+                .build();
         doPost(q, status().isBadRequest());
     }
 
@@ -131,7 +174,12 @@ public class QuestionControllerTest extends ControllerBaseTest {
     @Test
     public void updateExistentQuestion() throws Exception {
         final String newAnswer = "newAnswer";
-        Question q = new Question("q1", Arrays.asList("Answer1", "Answer2", "Answer3", newAnswer), 0);
+        final Question q = Question
+                .builder()
+                .questioning("q1")
+                .answers(Arrays.asList("Answer1", "Answer2", "Answer3", newAnswer))
+                .correctAnswerIndex(0)
+                .build();
         q.setId(q1.getId());
         doPut(q1.getId(), q, status().isNoContent());
         Question qSaved = questionRepo.findOne(q.getId());
@@ -141,7 +189,12 @@ public class QuestionControllerTest extends ControllerBaseTest {
     @Test
     public void updateNonExistentQuestion() throws Exception {
         final String nonExistentId = "1234";
-        Question q = new Question("q1", Arrays.asList("Answer1", "Answer2", "Answer3"), 0);
+        final Question q = Question
+                .builder()
+                .questioning("q1")
+                .answers(Arrays.asList("Answer1", "Answer2", "Answer3"))
+                .correctAnswerIndex(0)
+                .build();
         q.setId(nonExistentId);
         doPut(nonExistentId, q, status().isNotFound());
     }

@@ -41,6 +41,12 @@
         <artifactId>springfox-swagger-ui</artifactId>
         <version>2.7.0</version>
     </dependency>
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>1.16.16</version>
+        <scope>provided</scope>
+    </dependency>
     <!-- Dependency for embed mongo testing -->
     <dependency>
         <groupId>de.flapdoodle.embed</groupId>
