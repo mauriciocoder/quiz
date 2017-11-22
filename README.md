@@ -5,7 +5,6 @@ This example demonstrates how to setup a simple HTTP CRUD endpoint using SpringB
 - [SpringBoot](https://projects.spring.io/spring-boot/) is used to provide container's boot and MVC support.
 - [Swager](https://swagger.io/) is used for API tooling and REST documentation.
 - [MongoDB](https://www.mongodb.com/) is used for entity persistence.
-- [Exec Maven Plugin](http://www.mojohaus.org/exec-maven-plugin/) is used to provide goals for Java application run.
 - [Jackson](https://github.com/FasterXML/jackson) is used to serialize objects to JSON.
 
 
@@ -93,7 +92,7 @@ mvn package
 After having built the deployment artifact using Maven and having a mongodb instance configured as described above you can deploy by simply running:
 
 ```bash
-mvn exec:java
+clean package spring-boot:run
 ```
 
 The expected result should be similar to:
