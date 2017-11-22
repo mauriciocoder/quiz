@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.config.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.common.exceptions.UnsupportedGrantTypeException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,6 +35,13 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public void handle(ResourceAccessException e, HttpServletResponse response) throws Exception {
         log.warn("Returning HTTP 409 Conflict", e);
+        response.sendError(HttpStatus.CONFLICT.value());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public void handle(UnsupportedGrantTypeException e, HttpServletResponse response) throws Exception {
+        log.warn("UnsupportedGrantTypeException", e);
         response.sendError(HttpStatus.CONFLICT.value());
     }
 }

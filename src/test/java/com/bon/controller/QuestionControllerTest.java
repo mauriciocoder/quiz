@@ -24,7 +24,6 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class, EmbeddedMongoAutoConfiguration.class})
 @WebAppConfiguration
