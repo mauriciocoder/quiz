@@ -14,6 +14,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/question")
 public class QuestionController {
 
